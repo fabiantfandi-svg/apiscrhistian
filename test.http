@@ -1,0 +1,13 @@
+###Obtenet todas las tareas
+GET http://127.0.0.1:8000/api/tareas/
+
+###Crear una nueva tarea (POST)
+
+POST http://127.0.0.1:8000/api/tareas/
+Content-Type: application/json
+
+{
+    "titulo": "Mi primer tarea API",
+    "descripcion": "Probando el desacoplamiento",
+    "estado": "Pendiente"
+}
