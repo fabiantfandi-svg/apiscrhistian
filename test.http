@@ -11,3 +11,16 @@ Content-Type: application/json
     "descripcion": "Probando el desacoplamiento",
     "estado": "Pendiente"
 }
+
+###  Actualizar una tarea (REEMPLAZA EL ID)
+PUT http://127.0.0.1:8000/api/tareas/ID_DE_LA_TAREA/
+Content-Type: application/json
+
+{
+    "estado": "Completada"
+}
+
+
+###  Eliminar una tarea (REEMPLAZA EL ID)
+DELETE http://127.0.0.1:8000/api/tareas/ID_DE_LA_TAREA/
+Content-Type: application/json
