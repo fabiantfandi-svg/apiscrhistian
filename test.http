@@ -2,7 +2,6 @@
 GET http://127.0.0.1:8000/api/tareas/
 
 ###Crear una nueva tarea (POST)
-
 POST http://127.0.0.1:8000/api/tareas/
 Content-Type: application/json
 
@@ -13,14 +12,46 @@ Content-Type: application/json
 }
 
 ###  Actualizar una tarea (REEMPLAZA EL ID)
-PUT http://127.0.0.1:8000/api/tareas/ID_DE_LA_TAREA/
+PUT http://127.0.0.1:8000/api/tareas/fiYZOw0M5PXfLeIWibH7/
 Content-Type: application/json
 
 {
-    "estado": "Completada"
+    "titulo": "Titulo dos veces",
+    "descripcion": "Esta descripcion ha sido actualizada",
+    "estado": "En proceso"
 }
 
 
 ###  Eliminar una tarea (REEMPLAZA EL ID)
 DELETE http://127.0.0.1:8000/api/tareas/ID_DE_LA_TAREA/
 Content-Type: application/json
+
+### iniciar sesion para obtener eltoken
+
+POST http://127.0.0.1:8000/api/auth/registro/
+Content-Type: application/json
+
+{
+    "email" : "aprendiz@gmail.com",
+    "password" : "123456"
+}
+### iniciar sesion para obtener eltoken
+
+POST http://127.0.0.1:8000/api/auth/login/
+Content-Type: application/json
+
+{
+    "email" : "aprendiz@gmail.com",
+    "password" : "123456"
+}
+
+### iniciar sesion para obtener eltoken
+
+POST http://127.0.0.1:8000/api/tareas/
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjJjMjdhZmY1YzlkNGU1MzVkNWRjMmMwNWM1YTE2N2FlMmY1NjgxYzIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL3NlY3VyZXRva2VuLmdvb2dsZS5jb20vYXBpLXRhcmVhcy01YjgwYyIsImF1ZCI6ImFwaS10YXJlYXMtNWI4MGMiLCJhdXRoX3RpbWUiOjE3NzIwMzY4MjIsInVzZXJfaWQiOiJ4NDE1RENnY09HUVdKZTJablB1VHVsWGx2NlYyIiwic3ViIjoieDQxNURDZ2NPR1FXSmUyWm5QdVR1bFhsdjZWMiIsImlhdCI6MTc3MjAzNjgyMiwiZXhwIjoxNzcyMDQwNDIyLCJlbWFpbCI6ImFwcmVuZGl6QGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiZmlyZWJhc2UiOnsiaWRlbnRpdGllcyI6eyJlbWFpbCI6WyJhcHJlbmRpekBnbWFpbC5jb20iXX0sInNpZ25faW5fcHJvdmlkZXIiOiJwYXNzd29yZCJ9fQ.Tv24UOzBorRrpNncYYUgxPhWQkKpeCkHLp638C3wZGvg6H6NzSR0dJ_oVgGi1bR_qZ7QkOtYGoi_CrbaIUC1ix5zTYd4WISS11DnFnbQf7YHQJiCzFraBXNHDLFQ8EsYzz1MPxutMllZr1Bz5RSpcFfCg0sR_FIMotTD7ghiVqeaTIhfJbQzFvVvaYjglDwLcffVbcEdFJjEMrfj7et1cPOr_15cnEH9UoswzqA9TvDQ3MQFVy1IlD2GSD4rHXWktMnwU9AEjayybdDt3ZQs_83SPbg_ZSePOfBvqVAexreLHAKczUKwfa2csqMnn60eyScowQR5KG1EgtYxnx0qdw
+
+{
+    "titulo" : "tarea con api segura",
+    "descripcion" : "mi primera tarea usando jwt en firebase"
+}

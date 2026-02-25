@@ -1,16 +1,30 @@
+import os
 import firebase_admin
 from firebase_admin import credentials, firestore
-import os
-from pathlib import Path
+from dotenv import load_dotenv
 
-# Construir la ruta a la llave (ajusta el nombre de tu archivo .json)
-base_path = Path(__file__).resolve().parent.parent
-sdk_key_path = os.path.join(base_path, 'serviceAccountKey.json')
+load_dotenv()
 
-# Inicializar Firebase
-cred = credentials.Certificate(sdk_key_path)
-firebase_admin.initialize_app(cred)
+def initialize_firebase():
+    if not firebase_admin._apps:
+        try:
 
-# Esta es la función que te falta o que tiene el nombre mal escrito:
-def get_firestore_client():
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+
+            file_name = os.getenv('FIREBASE_KEYS_PATH')
+
+            cert_path = os.path.join(base_dir, file_name)
+
+            if not os.path.exists(cert_path):
+                raise FileNotFoundError(f"❌ No se encontro el archivo en: {cert_path}")
+            
+            cred = credentials.Certificate(cert_path)
+            firebase_admin.initialize_app(cred)
+
+            print("✅ Firebase SDK inicializado con ruta absoluta")
+
+        except Exception as e:
+            print(f"❌ Error al inicializar Firebase: {e}")
+            return None
+    
     return firestore.client()
