@@ -21,16 +21,24 @@ class TareasAPIView(APIView):
         # GET ahora solo trae las tareas del usuario del dueño del token
 
         uid_usuario = request.user.uid
+        rol_usuario = request.user.rol
+
         try:
-            #Traer todos los datos de la seleccion de firestore
-            docs = db.collection('api_tareas').where('usuario_id', "==", uid_usuario).stream()
+            #Logica de los roles
             tareas = []
+            if rol_usuario == 'instructor':
+                #EL instructor va apoder ver todas las tareas 
+                docs = db.collection('api_tareas').stream()
+            else:
+                #EL aprendiz solo podra ver sus tareas
+                docs = db.collection('api_tareas').where('usuario_id', '==', uid_usuario).stream()
+                
             for doc in docs:
-                tarea_data = doc.to_dict()
-                tarea_data['id'] = doc.id
-                tareas.append(tarea_data)
-            
-            return Response({"mensaje": "Exito", "Datos": tareas}, status=status.HTTP_200_OK)
+                data = doc.to_dict()
+                data['id'] = doc.id
+                tareas.append(data)
+
+            return Response({"Mensaje": f"Listado como rol {rol_usuario}", "datos": tareas}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"Error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
@@ -67,7 +75,7 @@ class TareasAPIView(APIView):
             
             tarea_data = doc.to_dict()
 
-            if tarea_data.get('usuario_id') != request.user.id:
+            if tarea_data.get('usuario_id') != request.user.uid:
                 return Response({"error": "No tienes permiso para editar esta tarea"}, status=status.HTTP_403_FORBIDDEN)
             serializer = TareasSerializer(data=request.data)
             if serializer.is_valid():
@@ -103,7 +111,7 @@ class TareasAPIView(APIView):
 
             tarea_data = doc.to_dict()
 
-            if tarea_data.get('usuario_id') != request.user.id:
+            if tarea_data.get('usuario_id') != request.user.uid:
                 return Response({"error": "No tienes permiso para editar esta tarea"}, status=status.HTTP_403_FORBIDDEN)
 
             return Response({"mensaje": f"Tarea {pk} se ha eliminado correctamente"}, status=status.HTTP_200_OK)

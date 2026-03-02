@@ -2,6 +2,9 @@ from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from firebase_admin import auth
 import firebase_admin
+from api_tareas.firebase_config import initialize_firebase
+
+db = initialize_firebase()
 
 class FirebaseAuthentication(BaseAuthentication):
     """
@@ -25,12 +28,18 @@ class FirebaseAuthentication(BaseAuthentication):
             #Le pido a firebase que valide la firma del token
             decoded_token=auth.verify_id_token(token)
             uid = decoded_token.get('uid')
+            email = decoded_token.get('email')
+            user_profile = db.collection('perfiles').document(uid).get()
+            rol = user_profile.to_dict().get('rol','aprendiz') if user_profile.exists else 'aprendiz'
             #Usuario
             class FirebaseUser:
-                is_authenticated = True
-                def __init__(self, uid):
+                def __init__(self, uid, rol, email):
                     self.uid = uid
-    
-            return (FirebaseUser(uid), decoded_token)
+                    self.rol = rol
+                    self.email = email
+                    self.is_authenticated = True
+
+            return (FirebaseUser(uid, rol, email), decoded_token)
+        
         except Exception as e:
             raise AuthenticationFailed(f"El token no es valido o esta expirado: {str(e)}")
