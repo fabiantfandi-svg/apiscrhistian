@@ -18,27 +18,38 @@ class TareasAPIView(APIView):
     Endpoint para listar todas las tareas (GET) y crear una nueva tarea (POST)
     """
     def get(self, request, tarea_id=None):
-        # GET ahora solo trae las tareas del usuario del dueño del token
-
+        limit = int(request.query_params.get('limit', 10))
+        last_doc_id = request.query_params.get('last_doc_id')
+        
         uid_usuario = request.user.uid
         rol_usuario = request.user.rol
 
         try:
-            #Logica de los roles
+            query = db.collection('api_tareas')
+
+            if rol_usuario != 'instructor':
+                query = query.where('usuario_id', '==', uid_usuario)
+
+            query = query.order_by('fecha_creacion')
+
+            if last_doc_id:
+                last_doc = db.collection('api_tareas').document(last_doc_id).get()
+                if last_doc.exists:
+                    query = query.start_after(last_doc)
+
+            docs = query.limit(limit).stream()
+            
             tareas = []
-            if rol_usuario == 'instructor':
-                #EL instructor va apoder ver todas las tareas 
-                docs = db.collection('api_tareas').stream()
-            else:
-                #EL aprendiz solo podra ver sus tareas
-                docs = db.collection('api_tareas').where('usuario_id', '==', uid_usuario).stream()
-                
             for doc in docs:
                 data = doc.to_dict()
                 data['id'] = doc.id
                 tareas.append(data)
 
-            return Response({"Mensaje": f"Listado como rol {rol_usuario}", "datos": tareas}, status=status.HTTP_200_OK)
+            return Response({
+                "Mensaje": f"Listado como rol {rol_usuario}", 
+                "datos": tareas
+            }, status=status.HTTP_200_OK)
+
         except Exception as e:
             return Response({"Error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
